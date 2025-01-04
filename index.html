@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicias Nelly - Registro de Ventas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #d35400;
+        }
+        .product-list, .cart-table {
+            margin: 20px 0;
+        }
+        .product {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f39c12;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Delicias Nelly - Registro de Ventas</h1>
+    <div class="product-list">
+        <h2>Productos</h2>
+        <div class="product">
+            <span>Pollo Chico (C$140 - C$150)</span>
+            <button onclick="addToCart('Pollo Chico', 140)">Añadir C$140</button>
+            <button onclick="addToCart('Pollo Chico', 150)">Añadir C$150</button>
+        </div>
+        <div class="product">
+            <span>Pupusa Mixta (C$45)</span>
+            <button onclick="addToCart('Pupusa Mixta', 45)">Añadir</button>
+        </div>
+        <div class="product">
+            <span>Pupusa de Queso (C$45)</span>
+            <button onclick="addToCart('Pupusa de Queso', 45)">Añadir</button>
+        </div>
+        <div class="product">
+            <span>Pupusa de Pollo (C$45)</span>
+            <button onclick="addToCart('Pupusa de Pollo', 45)">Añadir</button>
+        </div>
+        <div class="product">
+            <span>Pupusa de Chicharrón (C$45)</span>
+            <button onclick="addToCart('Pupusa de Chicharrón', 45)">Añadir</button>
+        </div>
+    </div>
+    <div class="cart-table">
+        <h2>Carrito</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="cart-body">
+                <tr>
+                    <td colspan="5">El carrito está vacío.</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Total General: C$<span id="total-price">0</span></h3>
+    </div>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function addToCart(product, price) {
+            const existingProduct = cart.find(item => item.product === product && item.price === price);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                cart.push({ product, price, quantity: 1 });
+            }
+            saveCart();
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            renderCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function renderCart() {
+            const cartBody = document.getElementById('cart-body');
+            cartBody.innerHTML = '';
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                cartBody.innerHTML = '<tr><td colspan="5">El carrito está vacío.</td></tr>';
+            } else {
+                cart.forEach((item, index) => {
+                    const total = item.price * item.quantity;
+                    totalPrice += total;
+                    const row = `<tr>
+                        <td>${item.product}</td>
+                        <td>C$${item.price}</td>
+                        <td>${item.quantity}</td>
+                        <td>C$${total}</td>
+                        <td><button onclick="removeFromCart(${index})">Eliminar</button></td>
+                    </tr>`;
+                    cartBody.innerHTML += row;
+                });
+            }
+
+            document.getElementById('total-price').innerText = totalPrice;
+        }
+
+        // Render the cart on page load
+        renderCart();
+    </script>
+</body>
+</html>
