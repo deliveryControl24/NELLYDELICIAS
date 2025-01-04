@@ -32,6 +32,15 @@
         button:hover {
             background-color: #2ecc71;
         }
+        .clear-buttons {
+            margin-top: 20px;
+        }
+        .clear-buttons button {
+            background-color: #e74c3c;
+        }
+        .clear-buttons button:hover {
+            background-color: #c0392b;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -95,6 +104,9 @@
             </tbody>
         </table>
         <h3>Total General: C$<span id="total-price">0</span></h3>
+        <div class="clear-buttons">
+            <button onclick="clearCart()">Limpiar Todo</button>
+        </div>
     </div>
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -112,6 +124,12 @@
 
         function removeFromCart(index) {
             cart.splice(index, 1);
+            saveCart();
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = [];
             saveCart();
             renderCart();
         }
