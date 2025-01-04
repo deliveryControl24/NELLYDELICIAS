@@ -1,66 +1,110 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delicias Nelly - Registro de Ventas</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            margin: 0;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
         }
         h1 {
-            color: #d35400;
+            color: #e67e22;
+            text-align: center;
         }
-        .product-list, .cart-table {
+        .product-list {
             margin: 20px 0;
         }
         .product {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            margin: 10px 0;
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            align-items: center;
+        }
+        .product:hover {
+            background-color: #f39c12;
+            cursor: pointer;
+        }
+        .product span {
+            font-size: 16px;
+            color: #ecf0f1;
         }
         button {
-            padding: 5px 10px;
+            padding: 10px;
             background-color: #27ae60;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #2ecc71;
-        }
-        .clear-buttons {
-            margin-top: 20px;
-        }
-        .clear-buttons button {
-            background-color: #e74c3c;
-        }
-        .clear-buttons button:hover {
-            background-color: #c0392b;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
         }
         table, th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #7f8c8d;
         }
         th, td {
-            padding: 8px;
+            padding: 10px;
             text-align: left;
         }
         th {
             background-color: #f39c12;
             color: white;
         }
+        td {
+            background-color: #34495e;
+        }
+        td button {
+            background-color: #e74c3c;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        td button:hover {
+            background-color: #c0392b;
+        }
+        .cart-table, .sales-log {
+            margin-top: 20px;
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .cart-table table, .sales-log table {
+            width: 100%;
+            margin-top: 0;
+        }
+        .clear-buttons button {
+            background-color: #e74c3c;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .clear-buttons button:hover {
+            background-color: #c0392b;
+        }
     </style>
 </head>
 <body>
     <h1>Delicias Nelly - Registro de Ventas</h1>
+    
+    <!-- Lista de productos -->
     <div class="product-list">
         <h2>Productos</h2>
         <div class="product">
@@ -85,6 +129,8 @@
             <button onclick="addToCart('Pupusa de Chicharrón', 45)">Añadir</button>
         </div>
     </div>
+
+    <!-- Carrito de compras -->
     <div class="cart-table">
         <h2>Carrito</h2>
         <table>
@@ -105,11 +151,78 @@
         </table>
         <h3>Total General: C$<span id="total-price">0</span></h3>
         <div class="clear-buttons">
-            <button onclick="clearCart()">Limpiar Todo</button>
+            <button onclick="confirmClearCart()">Limpiar Todo</button>
         </div>
     </div>
+
+    <!-- Registro de ventas -->
+    <div class="sales-log">
+        <h2>Registro de Ventas - Pollo Chuco</h2>
+        <table id="sales-log-pollo">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                    <th>Cantidad</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="sales-log-pollo-body">
+                <tr>
+                    <td colspan="6">No hay ventas de Pollo Chuco registradas.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Registro de Ventas - Pupusas</h2>
+        <table id="sales-log-pupusas">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                    <th>Cantidad</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="sales-log-pupusas-body">
+                <tr>
+                    <td colspan="6">No hay ventas de Pupusas registradas.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="totals">
+            <h3>Totales</h3>
+            <div id="totals-pollo">
+                <p>Total de Pollo Chuco: C$<span id="total-pollo">0</span></p>
+                <p>Cantidad de Pollos Chucos Vendidos: <span id="quantity-pollo">0</span></p>
+            </div>
+            <div id="totals-pupusas">
+                <p>Total de Pupusas: C$<span id="total-pupusas">0</span></p>
+                <p>Cantidad de Pupusas Vendidas: <span id="quantity-pupusas">0</span></p>
+            </div>
+        </div>
+
+        <div class="clear-buttons">
+            <button onclick="confirmClearSales()">Limpiar Registro de Ventas</button>
+            <button onclick="downloadSalesImage()">Descargar Imagen de Ventas</button>
+            <button onclick="downloadTotalEarnings()">Descargar Ganancias del Día</button>
+        </div>
+    </div>
+
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let salesLogPollo = JSON.parse(localStorage.getItem('salesLogPollo')) || [];
+        let salesLogPupusas = JSON.parse(localStorage.getItem('salesLogPupusas')) || [];
+        let totalEarnings = 0;
+        let totalPollo = 0;
+        let totalPupusas = 0;
+        let quantityPollo = 0;
+        let quantityPupusas = 0;
 
         function addToCart(product, price) {
             const existingProduct = cart.find(item => item.product === product && item.price === price);
@@ -120,18 +233,32 @@
             }
             saveCart();
             renderCart();
+            addSale(product, price);
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            saveCart();
-            renderCart();
-        }
+        function addSale(product, price) {
+            const sale = {
+                id: (product.includes('Pollo Chuco') ? salesLogPollo.length : salesLogPupusas.length) + 1,
+                date: new Date().toLocaleDateString(), // Solo la fecha
+                products: product,
+                total: price,
+                quantity: 1
+            };
 
-        function clearCart() {
-            cart = [];
-            saveCart();
-            renderCart();
+            if (product.includes('Pollo Chuco')) {
+                salesLogPollo.push(sale);
+                localStorage.setItem('salesLogPollo', JSON.stringify(salesLogPollo));
+                totalPollo += price;
+                quantityPollo += 1;
+            } else {
+                salesLogPupusas.push(sale);
+                localStorage.setItem('salesLogPupusas', JSON.stringify(salesLogPupusas));
+                totalPupusas += price;
+                quantityPupusas += 1;
+            }
+
+            totalEarnings += price;
+            renderSalesLog();
         }
 
         function saveCart() {
@@ -163,8 +290,101 @@
             document.getElementById('total-price').innerText = totalPrice;
         }
 
-        // Render the cart on page load
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            renderCart();
+        }
+
+        function renderSalesLog() {
+            renderSalesTable('sales-log-pollo-body', salesLogPollo);
+            renderSalesTable('sales-log-pupusas-body', salesLogPupusas);
+
+            // Mostrar totales
+            document.getElementById('total-pollo').innerText = totalPollo;
+            document.getElementById('quantity-pollo').innerText = quantityPollo;
+
+            document.getElementById('total-pupusas').innerText = totalPupusas;
+            document.getElementById('quantity-pupusas').innerText = quantityPupusas;
+        }
+
+        function renderSalesTable(tableId, sales) {
+            const salesBody = document.getElementById(tableId);
+            salesBody.innerHTML = '';
+
+            if (sales.length === 0) {
+                salesBody.innerHTML = '<tr><td colspan="6">No hay ventas registradas.</td></tr>';
+            } else {
+                sales.forEach((sale) => {
+                    const row = `<tr>
+                        <td>${sale.id}</td>
+                        <td>${sale.date}</td>
+                        <td>${sale.products}</td>
+                        <td>C$${sale.total}</td>
+                        <td>${sale.quantity}</td>
+                        <td><button onclick="removeSale('${sale.products}', ${sale.total}, ${sale.quantity})">Eliminar</button></td>
+                    </tr>`;
+                    salesBody.innerHTML += row;
+                });
+            }
+        }
+
+        function removeSale(product, price, quantity) {
+            if (product.includes('Pollo Chuco')) {
+                salesLogPollo = salesLogPollo.filter(sale => sale.products !== product);
+                localStorage.setItem('salesLogPollo', JSON.stringify(salesLogPollo));
+                totalPollo -= price * quantity;
+                quantityPollo -= quantity;
+            } else {
+                salesLogPupusas = salesLogPupusas.filter(sale => sale.products !== product);
+                localStorage.setItem('salesLogPupusas', JSON.stringify(salesLogPupusas));
+                totalPupusas -= price * quantity;
+                quantityPupusas -= quantity;
+            }
+            totalEarnings -= price * quantity;
+            renderSalesLog();
+        }
+
+        function confirmClearCart() {
+            if (confirm("¿Estás seguro de limpiar todo el carrito?")) {
+                cart = [];
+                saveCart();
+                renderCart();
+            }
+        }
+
+        function confirmClearSales() {
+            if (confirm("¿Estás seguro de limpiar todo el registro de ventas?")) {
+                salesLogPollo = [];
+                salesLogPupusas = [];
+                localStorage.setItem('salesLogPollo', JSON.stringify(salesLogPollo));
+                localStorage.setItem('salesLogPupusas', JSON.stringify(salesLogPupusas));
+                totalPollo = totalPupusas = totalEarnings = 0;
+                quantityPollo = quantityPupusas = 0;
+                renderSalesLog();
+            }
+        }
+
+        function downloadSalesImage() {
+            html2canvas(document.querySelector(".sales-log")).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL();
+                link.download = 'ventas.png';
+                link.click();
+            });
+        }
+
+        function downloadTotalEarnings() {
+            const earningsText = `Ganancias Totales del Día: C$${totalEarnings}`;
+            const blob = new Blob([earningsText], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'ganancias_totales.txt';
+            link.click();
+        }
+
         renderCart();
+        renderSalesLog();
     </script>
 </body>
 </html>
